@@ -1,4 +1,4 @@
-import "./App.css";
+import css from "./App.module.css";
 import { Formik, Form, Field } from "formik";
 import { useId } from "react";
 import * as Yup from "yup";
@@ -7,9 +7,9 @@ import { ErrorMessage } from "formik";
 //валідація елементів форми
 const FeedbackSchema = Yup.object().shape({
   username: Yup.string()
-    .min(2, "Too Short!")
-    .max(50, "Too Long!")
-    .required("Required"),
+    .min(2, <span className={css.error}>Too Short!</span>)
+    .max(50, <span className={css.error}>Too Long!</span>)
+    .required(<span className={css.error}>Required</span>),
   email: Yup.string().email("Must be a valid email!").required("Required"),
   message: Yup.string()
     .min(3, "too short")
