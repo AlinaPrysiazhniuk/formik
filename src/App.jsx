@@ -1,35 +1,83 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
+import { Formik, Form, Field } from "formik";
+import { useId } from "react";
+import * as Yup from "yup";
+import { ErrorMessage } from "formik";
 
-function App() {
-  const [count, setCount] = useState(0)
+//валідація елементів форми
+const FeedbackSchema = Yup.object().shape({
+  username: Yup.string()
+    .min(2, "Too Short!")
+    .max(50, "Too Long!")
+    .required("Required"),
+  email: Yup.string().email("Must be a valid email!").required("Required"),
+  message: Yup.string()
+    .min(3, "too short")
+    .max(256, "Too long")
+    .required("Required"),
+  level: Yup.string().oneOf(["good", "neutral", "bad"]).required("Required"),
+});
+
+//валідація
+
+const initialValues = {
+  username: "",
+  email: "",
+  message: "",
+  level: "good",
+};
+
+const FeedbackForm = () => {
+  const nameFieldId = useId();
+  const emailFieldId = useId();
+  const msgFieldId = useId();
+  const levelFieldId = useId();
+
+  const handleSubmit = (values, actions) => {
+    console.log(values);
+    actions.resetForm();
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <Formik
+      initialValues={initialValues}
+      onSubmit={handleSubmit}
+      validationSchema={FeedbackSchema}
+    >
+      <Form>
+        <div>
+          <label htmlFor={nameFieldId}>Username</label>
+          <Field type="text" name="username" id={nameFieldId} />
+          <ErrorMessage name="username" as="span" />
+        </div>
 
-export default App
+        <div>
+          <label htmlFor={emailFieldId}>Email</label>
+          <Field type="email" name="email" id={emailFieldId} />
+          <ErrorMessage name="email" as="span" />
+        </div>
+
+        <hr />
+        <div>
+          <label htmlFor={msgFieldId}>Message</label>
+          <Field as="textarea" name="message" id={msgFieldId} rows="5" />
+          <ErrorMessage name="message" as="span" />
+        </div>
+
+        <div>
+          <label htmlFor={levelFieldId}>Service satisfaction level</label>
+          <Field as="select" name="level" id={levelFieldId}>
+            <option value="good">Good</option>
+            <option value="neutral">Neutral</option>
+            <option value="bad">Bad</option>
+          </Field>
+          <ErrorMessage name="level" as="span" />
+        </div>
+        <hr />
+        <button type="submit">Submit</button>
+      </Form>
+    </Formik>
+  );
+};
+
+export default FeedbackForm;
